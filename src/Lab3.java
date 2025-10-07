@@ -1,21 +1,31 @@
 import java.util.Scanner;
-
 import com.formdev.flatlaf.FlatDarkLaf;
 
-
-
-public class Lab3{
+public class Lab3 {
     static int solutionCount;
     static char[][] firstSolution;
 
+    // Original main method for console input
     public static void main(String[] args) {
         FlatDarkLaf.setup();
+
+        // Check if we should run GUI or console version
+        if (args.length > 0 && args[0].equals("--console")) {
+            runConsoleVersion();
+        } else {
+            // This will be called from the GUI
+            String[] guiArgs = {};
+            SudokuGUI.main(guiArgs);
+        }
+    }
+
+    private static void runConsoleVersion() {
         Scanner scanner = new Scanner(System.in);
 
         // Read number of puzzles
         System.out.println("Enter number of puzzles:");
         int numPuzzles = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter the goddamn puzzles:");
+        System.out.println("Enter the puzzles:");
 
         // Read all puzzles at once
         String[] puzzleInput = new String[numPuzzles * 9];
@@ -35,17 +45,21 @@ public class Lab3{
         }
     }
 
-    static void solvePuzzle(char[][] puzzle) {
+    // Modified to work with GUI
+    public static void solvePuzzleGUI(char[][] puzzle) {
         // Reset the variables for each puzzle
         solutionCount = 0;
         firstSolution = new char[9][9];
 
-
-        //Creates a copy of the arguement puzzle in order to avoid inteference from previous runs
+        // Creates a copy of the argument puzzle to avoid interference
         char[][] grid = deepCopy(puzzle);
         solve(grid);
+    }
 
-        //Output of results depending on the number of solutions that are found
+    static void solvePuzzle(char[][] puzzle) {
+        solvePuzzleGUI(puzzle);
+
+        // Output of results depending on the number of solutions that are found
         if (solutionCount == 0) {
             System.out.println("There are no possible solutions.");
         } else if (solutionCount == 1) {
@@ -54,18 +68,16 @@ public class Lab3{
         } else {
             System.out.println("There are " + solutionCount + " possible solutions");
         }
-
     }
 
-
-    //The recursive solve method
+    // The recursive solve method
     static boolean solve(char[][] grid) {
-        //Finds the first empty cell and assign its coordinates to an array
+        // Finds the first empty cell and assign its coordinates to an array
         int[] cell = findEmptyCell(grid);
 
-        //If cell is null there are no empty spaces therefore the sudoku is solved
+        // If cell is null there are no empty spaces therefore the sudoku is solved
         if (cell == null) {
-            //Creats a copy if it is the first solution encountered and assigns it to first solution
+            // Creates a copy if it is the first solution encountered and assigns it to first solution
             if (solutionCount == 0) {
                 firstSolution = deepCopy(grid);
             }
@@ -74,7 +86,7 @@ public class Lab3{
             return solutionCount > 1;
         }
 
-        //Assigns the column of the row and the column
+        // Assigns the column of the row and the column
         int row = cell[0], col = cell[1];
 
         for (int num = 1; num <= 9; num++) {
@@ -110,8 +122,7 @@ public class Lab3{
         return true;
     }
 
-
-    //Loops through the array to find an empty cell
+    // Loops through the array to find an empty cell
     private static int[] findEmptyCell(char[][] grid) {
         for (int r = 0; r < 9; r++) {
             for (int c = 0; c < 9; c++) {
@@ -123,8 +134,8 @@ public class Lab3{
         return null;
     }
 
-    //Creates copies of arrays
-    private static char[][] deepCopy(char[][] original) {
+    // Creates copies of arrays
+    static char[][] deepCopy(char[][] original) {
         char[][] copy = new char[9][9];
         for (int i = 0; i < 9; i++) {
             System.arraycopy(original[i], 0, copy[i], 0, 9);
@@ -132,8 +143,7 @@ public class Lab3{
         return copy;
     }
 
-
-    //Prints arrays
+    // Prints arrays
     private static void printGrid(char[][] grid) {
         for (int r = 0; r < 9; r++) {
             for (int c = 0; c < 9; c++) {
